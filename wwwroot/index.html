@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Reforger Hub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><img src="icon.png" class="brand-icon" alt="">REFORGER <b>HUB</b></div>
+    <nav class="views">
+      <button data-view="projects" class="active">Projects</button>
+      <button data-view="graph">Dependency graph</button>
+      <button data-view="logs">Logs</button>
+      <button data-view="updates">Updates <span id="upd-count" class="nav-badge hidden"></span></button>
+    </nav>
+    <div class="search"><input id="search" placeholder="Search name, ID, GUID, tag..." autocomplete="off"></div>
+    <button id="btn-quick" class="btn quick" title="Quick open (Ctrl+K)">&#9889; Quick open <kbd>Ctrl K</kbd></button>
+    <div id="wb-state" class="pill">Workbench</div>
+    <button id="btn-new" class="btn primary">+ New project</button>
+    <button id="btn-rescan" class="btn icon" title="Rescan">&#x21bb;</button>
+    <button id="btn-settings" class="btn icon" title="Settings">&#9881;</button>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <section>
+        <h4>Source</h4>
+        <div class="filter-list" id="f-source"></div>
+      </section>
+      <section>
+        <h4>Status</h4>
+        <div class="filter-list" id="f-status"></div>
+      </section>
+      <section>
+        <h4>Quick filters</h4>
+        <div class="filter-list" id="f-quick"></div>
+      </section>
+      <section>
+        <h4>Relations</h4>
+        <label class="field">Depends on
+          <select id="f-depends"></select>
+        </label>
+        <label class="field">Used by
+          <select id="f-usedby"></select>
+        </label>
+      </section>
+      <section>
+        <h4>Tags</h4>
+        <div class="tags" id="f-tags"></div>
+      </section>
+      <section>
+        <h4>Sort</h4>
+        <select id="f-sort">
+          <option value="worked">Last worked on</option>
+          <option value="modified">Last modified</option>
+          <option value="name">Name</option>
+          <option value="size">Size</option>
+          <option value="used">Most used by others</option>
+        </select>
+      </section>
+    </aside>
+
+    <main class="content">
+      <section id="view-projects" class="view active">
+        <div class="content-head">
+          <h2 id="list-title">All projects</h2>
+          <span id="list-count" class="muted"></span>
+          <div class="spacer"></div>
+          <div class="seg" id="layout-toggle">
+            <button data-layout="grid" class="active">Grid</button>
+            <button data-layout="list">List</button>
+          </div>
+        </div>
+        <div id="recent" class="recent"></div>
+        <div id="cards" class="cards grid"></div>
+        <div id="empty" class="empty hidden">No projects match these filters.</div>
+      </section>
+
+      <section id="view-graph" class="view">
+        <div class="content-head">
+          <h2>Dependency graph</h2>
+          <span class="muted">Your projects and everything they depend on. Drag to pan, scroll to zoom, click a node.</span>
+          <div class="spacer"></div>
+          <label class="check"><input type="checkbox" id="g-workshop"> Include all workshop mods</label>
+          <button id="g-fit" class="btn">Fit</button>
+        </div>
+        <div class="graph-wrap"><svg id="graph"></svg></div>
+      </section>
+
+      <section id="view-updates" class="view">
+        <div class="content-head">
+          <h2>Mod updates</h2>
+          <span id="upd-info" class="muted"></span>
+          <div class="spacer"></div>
+          <label class="check"><input type="checkbox" id="upd-only"> Only mods with updates</label>
+          <button id="upd-check" class="btn">Check now</button>
+          <button id="upd-all" class="btn primary">Update all</button>
+        </div>
+        <div id="upd-panel" class="upd-panel"></div>
+        <div id="upd-table" class="upd-table"></div>
+      </section>
+
+      <section id="view-logs" class="view">
+        <div class="content-head">
+          <h2>Workbench log</h2>
+          <span id="log-info" class="muted"></span>
+          <div class="spacer"></div>
+          <label class="check"><input type="checkbox" id="log-noise" checked> Hide known vanilla noise</label>
+          <button id="log-refresh" class="btn">Refresh</button>
+          <button id="log-open" class="btn">Open folder</button>
+        </div>
+        <div id="log-banner" class="banner hidden"></div>
+        <div id="log-list" class="log-list"></div>
+      </section>
+    </main>
+
+    <aside id="drawer" class="drawer hidden"></aside>
+  </div>
+
+  <div id="modal" class="modal hidden"><div class="modal-card" id="modal-card"></div></div>
+  <div id="palette" class="palette hidden">
+    <div class="palette-card">
+      <input id="palette-input" placeholder="Open a project in Workbench..." autocomplete="off">
+      <div id="palette-list" class="palette-list"></div>
+      <div class="palette-foot"><span><kbd>Enter</kbd> open in Workbench</span><span><kbd>Shift</kbd>+<kbd>Enter</kbd> show in Hub</span><span><kbd>Esc</kbd> close</span></div>
+    </div>
+  </div>
+  <div id="toast" class="toast"></div>
+  <script src="app.js"></script>
+</body>
+</html>
