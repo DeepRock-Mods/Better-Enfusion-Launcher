@@ -8,10 +8,20 @@ namespace ReforgerHub;
 public sealed class Store
 {
     private static readonly JsonSerializerOptions Json = new() { WriteIndented = true };
-    private readonly string _dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ReforgerHub");
+    private readonly string _dir;
     private readonly object _lock = new();
 
     public Settings Settings { get; set; } = new();
+
+    /// <param name="dir">Where settings and tracking live (default %AppData%\ReforgerHub; demo mode uses a temp folder)</param>
+    public Store(string? dir = null)
+    {
+        _dir = dir ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ReforgerHub");
+        Demo = dir != null;
+    }
+
+    /// <summary>Demo mode: keep the given settings, find nothing on this PC</summary>
+    public bool Demo { get; }
     public Dictionary<string, Tracking> Tracking { get; private set; } = new();
 
     private string SettingsPath => Path.Combine(_dir, "settings.json");
@@ -20,6 +30,13 @@ public sealed class Store
     public void Load()
     {
         Directory.CreateDirectory(_dir);
+        if (Demo)
+        {
+            SaveSettings();
+            SaveTracking();
+            return;
+        }
+
         Settings = Read<Settings>(SettingsPath) ?? new Settings();
         Tracking = Read<Dictionary<string, Tracking>>(TrackingPath) ?? new();
         DetectPaths();

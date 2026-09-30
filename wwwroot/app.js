@@ -71,6 +71,7 @@ const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "
 async function load(cmd = "init") {
   const data = await call(cmd);
   S.settings = data.settings;
+  S.demo = !!data.demo;
   S.tracking = data.tracking || {};
   S.projects = data.projects;
   index();
@@ -1160,6 +1161,14 @@ function onUpdater(data) {
   scheduleRender();
 }
 
+// Demo mode (README screenshot): a project open in the drawer, no entry animations, captured on the second frame
+function showDemo() {
+  const first = filtered()[0];
+  if (first) select(first.dir);
+  renderCards(false);
+  requestAnimationFrame(() => requestAnimationFrame(() => call("rendered").catch(() => {})));
+}
+
 function setView(view) {
   S.view = view;
   $$(".views button").forEach((b) => b.classList.toggle("active", b.dataset.view === view));
@@ -1242,6 +1251,7 @@ load().then(async () => {
   renderAll();
   renderUpdateCount();
   if (S.settings.checkUpdatesOnStart !== false) call("checkUpdates", {}).catch(() => {});
+  if (S.demo) showDemo();
   // Workbench is another program: its state is checked every few seconds
   setInterval(pollWorkbench, 4000);
 }).catch((e) => toast(e.message, true));

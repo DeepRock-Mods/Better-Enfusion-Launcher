@@ -3,6 +3,8 @@
 A fast, modern project launcher and mod manager for **Arma Reforger** modders — a replacement for the stock
 Arma Reforger Tools launcher, with filters, dependency tracking, project notes and one-click mod updates.
 
+![Reforger Hub](docs/screenshot.png)
+
 > **Unofficial.** Reforger Hub is a community tool. It is not affiliated with, endorsed by or supported by
 > Bohemia Interactive. "Arma" and "Arma Reforger" are trademarks of Bohemia Interactive a.s.
 
@@ -21,9 +23,11 @@ Arma Reforger Tools launcher, with filters, dependency tracking, project notes a
 
 ## Install
 
-1. Download the latest release and unzip it anywhere.
-2. Run `ReforgerHub.exe`. It needs the [WebView2 runtime](https://developer.microsoft.com/microsoft-edge/webview2/)
-   (already installed on up-to-date Windows 10 / 11).
+1. Go to **[Releases](../../releases/latest)** and download one of the zips:
+   - **`…-win-x64-standalone.zip`** — works on any 64-bit Windows 10 / 11, nothing else to install (recommended).
+   - **`…-win-x64.zip`** — much smaller, needs the [.NET 9 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/9.0).
+2. Unzip it anywhere and run `ReforgerHub.exe`. It also needs the
+   [WebView2 runtime](https://developer.microsoft.com/microsoft-edge/webview2/), which up-to-date Windows 10 / 11 already has.
 3. Open **Settings** (⚙) and check the folders it found: the Workbench executable, the game folder, your
    Workbench addons folder, the downloaded mods folder and the Workbench logs folder.
 
@@ -51,6 +55,12 @@ dotnet build -c Release
 
 The app ends up in `bin/Release/net9.0-windows/`. Release builds are deterministic and contain no debug symbols or
 local paths.
+
+Releases are built by GitHub Actions: pushing a tag like `v1.2.0` builds both zips and publishes the release
+(see `.github/workflows/release.yml`).
+
+`ReforgerHub.exe --demo shot.png` opens the app on made-up example projects, saves a screenshot of the window and
+closes (that is how the picture above is made).
 
 ## Data it keeps
 

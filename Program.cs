@@ -14,6 +14,13 @@ internal static class Program
             return;
         }
 
+        // ReforgerHub.exe --demo <file.png>: example data, a screenshot of the window, then exit (README picture)
+        if (args.Length >= 2 && args[0] == "--demo")
+        {
+            Application.Run(new MainForm(Demo.Create(), Path.GetFullPath(args[1])));
+            return;
+        }
+
         Application.Run(new MainForm());
     }
 

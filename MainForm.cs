@@ -12,15 +12,18 @@ public sealed class MainForm : Form
     private static readonly JsonSerializerOptions Json = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
     private readonly WebView2 _web = new() { Dock = DockStyle.Fill, DefaultBackgroundColor = Color.FromArgb(10, 12, 16) };
-    private readonly Store _store = new();
+    private readonly Store _store;
+    private readonly string? _screenshot;
     private List<Project> _projects = new();
     private CancellationTokenSource? _statsCancel;
     private CancellationTokenSource? _checkCancel;
     private readonly Dictionary<string, RemoteInfo> _remote = new();
     private readonly Updater _updater;
 
-    public MainForm()
+    public MainForm(Store? store = null, string? screenshot = null)
     {
+        _store = store ?? new Store();
+        _screenshot = screenshot;
         Text = "Reforger Hub";
         Width = 1600;
         Height = 960;
@@ -104,6 +107,18 @@ public sealed class MainForm : Form
     {
         switch (cmd)
         {
+            case "rendered":
+            {
+                // Demo mode: the UI has finished its entry animations; capture it and close
+                if (_screenshot == null)
+                    return false;
+
+                await using (var file = File.Create(_screenshot))
+                    await _web.CoreWebView2.CapturePreviewAsync(CoreWebView2CapturePreviewImageFormat.Png, file);
+                BeginInvoke(Close);
+                return true;
+            }
+
             case "init":
             case "rescan":
                 return await Rescan();
@@ -252,6 +267,7 @@ public sealed class MainForm : Form
         return new
         {
             settings = _store.Settings,
+            demo = _store.Demo,
             projects = _projects.Select(Describe),
             tracking = _store.Tracking,
         };

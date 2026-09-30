@@ -1,0 +1,45 @@
+name: Release
+
+# Pushing a version tag (v1.0.0, v1.1.0, ...) builds the app on GitHub's machines and publishes a release with two zips.
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Build (small, needs the .NET 9 Desktop Runtime)
+        run: dotnet publish ReforgerHub.csproj -c Release -r win-x64 --self-contained false -p:PublishSingleFile=true -o out/small
+
+      - name: Build (standalone, nothing else needed)
+        run: dotnet publish ReforgerHub.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o out/standalone
+
+      - name: Zip
+        shell: pwsh
+        run: |
+          Compress-Archive -Path out/standalone/* -DestinationPath "ReforgerHub-${{ github.ref_name }}-win-x64-standalone.zip"
+          Compress-Archive -Path out/small/* -DestinationPath "ReforgerHub-${{ github.ref_name }}-win-x64.zip"
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          name: Reforger Hub ${{ github.ref_name }}
+          files: ReforgerHub-*.zip
+          generate_release_notes: true
+          body: |
+            **Download** `ReforgerHub-${{ github.ref_name }}-win-x64-standalone.zip` if you're not sure — it runs on any
+            64-bit Windows 10 / 11 with nothing else to install.
+
+            `ReforgerHub-${{ github.ref_name }}-win-x64.zip` is much smaller but needs the
+            [.NET 9 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/9.0) installed.
+
+            Unzip anywhere and run `ReforgerHub.exe`.
